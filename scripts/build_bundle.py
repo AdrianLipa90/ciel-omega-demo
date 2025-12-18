@@ -25,7 +25,9 @@ def main() -> int:
 
     sep = ';' if sys.platform.startswith('win') else ':'
     logo_src = root / 'main' / 'Logo1.png'
-    add_data = f"{logo_src}{sep}main"
+    add_data_logo = f"{logo_src}{sep}main"
+    entry_omega_src = root / 'scripts' / 'entry_omega.py'
+    add_data_entry_omega = f"{entry_omega_src}{sep}scripts"
 
     base = [
         sys.executable,
@@ -49,7 +51,9 @@ def main() -> int:
             'ciel-omega',
             str(root / 'scripts' / 'entry_omega.py'),
             '--add-data',
-            add_data,
+            add_data_logo,
+            '--add-data',
+            add_data_entry_omega,
             '--collect-all',
             'nicegui',
         ]

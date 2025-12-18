@@ -308,6 +308,9 @@ def main() -> int:
 
     if hasattr(sys, '_MEIPASS'):
         assets_dir = Path(getattr(sys, '_MEIPASS')) / 'main'
+        entry_script = Path(getattr(sys, '_MEIPASS')) / 'scripts' / 'entry_omega.py'
+        if entry_script.exists():
+            sys.argv[0] = str(entry_script)
     else:
         assets_dir = BASE_DIR / 'main'
     if assets_dir.exists():

@@ -9,5 +9,6 @@ logs/
 dist_bundle/
 build_bundle/
 spec_bundle/
+dist_installer/
 
 *.egg-info/
