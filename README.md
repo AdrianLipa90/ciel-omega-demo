@@ -187,6 +187,4 @@ Publikowane artefakty:
 - Zmiana portu:
   - ustaw `CIEL_PORT` i uruchom ponownie
 
----
 
-Jeśli chcesz, mogę dopisać sekcję „Release checklist” pod publikację wersji demo (tagowanie, budowa artefaktów, opis paczek).
