@@ -1,4 +1,8 @@
-# CIEL (local demo)
+# CIEL/Ω — General Quantum Consciousness System  
+### *README — Scientific, Mathematical & Architectural Documentation*
+A. Lipa, S. Sakpal, M. Kamecka, U. Ahmad (2025). (c) 2025 Adrian Lipa / Intention Lab
+--- 
+# (local demo)
 
 CIEL to lokalny, single-userowy klient demo (UI + CLI) do uruchamiania i testowania workflow oraz (opcjonalnie) lokalnej inferencji na modelach **GGUF**.
 
