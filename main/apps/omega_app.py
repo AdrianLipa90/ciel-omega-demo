@@ -639,6 +639,28 @@ def main() -> int:
                 with ui.card().classes('w-1/3 p-4'):
                     ui.label('Reality Pulse').classes('text-base font-semibold')
                     pulse_status = ui.label('').classes('text-xs text-gray-400')
+                    pulse_gauge_options: dict[str, Any] = {
+                        'series': [
+                            {
+                                'type': 'gauge',
+                                'min': 0,
+                                'max': 1,
+                                'startAngle': 210,
+                                'endAngle': -30,
+                                'progress': {'show': True, 'width': 10},
+                                'axisLine': {'lineStyle': {'width': 10}},
+                                'pointer': {'show': True, 'width': 4},
+                                'axisTick': {'show': False},
+                                'splitLine': {'length': 10, 'lineStyle': {'width': 1}},
+                                'axisLabel': {'color': 'rgba(234, 242, 255, 0.70)'},
+                                'title': {'show': True, 'offsetCenter': [0, '65%'], 'color': 'rgba(234, 242, 255, 0.70)'},
+                                'detail': {'valueAnimation': True, 'formatter': '{value}', 'color': '#EAF2FF'},
+                                'data': [{'value': 0.0, 'name': 'resonance'}],
+                            }
+                        ],
+                    }
+                    pulse_gauge = ui.echart(pulse_gauge_options).classes('w-full')
+                    pulse_gauge.style('height: 180px;')
                     pulse_view = ui.code('').classes('w-full')
                     pulse_view.style('height: 220px; overflow: auto;')
 
@@ -674,6 +696,8 @@ def main() -> int:
                             pulse_status.text = f'No recent log record (expected: {p})'
                             pulse_view.content = ''
                             pulse_view.update()
+                            pulse_gauge_options['series'][0]['data'][0]['value'] = 0.0
+                            pulse_gauge.update()
                             return
 
                         step = rec.get('step')
@@ -687,6 +711,13 @@ def main() -> int:
                         ethical_ok = rec.get('ethical_ok')
                         age_txt = '-' if age is None else f'{age:.1f}s ago'
                         pulse_status.text = f"step={step} | resonance={resonance} | ethical_ok={ethical_ok} | {age_txt}"
+                        try:
+                            r_val = 0.0 if resonance is None else float(resonance)
+                            r_val = max(0.0, min(1.0, r_val))
+                        except Exception:
+                            r_val = 0.0
+                        pulse_gauge_options['series'][0]['data'][0]['value'] = r_val
+                        pulse_gauge.update()
                         pulse_view.content = json.dumps(rec, ensure_ascii=False, indent=2)
                         pulse_view.update()
 
