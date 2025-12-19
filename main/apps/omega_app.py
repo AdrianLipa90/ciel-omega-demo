@@ -1859,18 +1859,18 @@ def main() -> int:
     preferred_port = int(os.environ.get('CIEL_PORT', '8080'))
     port = _pick_port(host, preferred_port)
     if port != preferred_port:
-        print(f'Port {preferred_port} is busy; using {port} instead')
+        print(f'Port {preferred_port} is busy; using {port} instead', flush=True)
 
     for _ in range(3):
         try:
-            print(f'NiceGUI starting on http://{host}:{port}')
+            print(f'NiceGUI starting on http://{host}:{port}', flush=True)
             ui.run(title='CIEL/Ω', reload=False, host=host, port=port)
             break
         except OSError as ex:
             if getattr(ex, 'errno', None) != 98:
                 raise
             port = _pick_port(host, int(port) + 1)
-            print(f'Port busy; retry on http://{host}:{port}')
+            print(f'Port busy; retry on http://{host}:{port}', flush=True)
     return 0
 
 
