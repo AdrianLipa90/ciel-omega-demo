@@ -480,7 +480,7 @@ def main() -> int:
 
     model_load_state: dict[str, Any] = {'busy': False}
 
-    async def _load_active_model_async() -> None:
+    async def _load_active_model() -> None:
         if bool(model_load_state.get('busy')):
             return
         model_load_state['busy'] = True
@@ -517,9 +517,6 @@ def main() -> int:
             ui.notify(f'Load error: {ex}', type='negative')
         finally:
             model_load_state['busy'] = False
-
-    def _load_active_model(*_args: Any, **_kwargs: Any) -> None:
-        asyncio.create_task(_load_active_model_async())
 
     def _get_models_from_state() -> list[ModelEntry]:
         models: list[ModelEntry] = []
