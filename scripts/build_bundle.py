@@ -28,6 +28,8 @@ def main() -> int:
     add_data_logo = f"{logo_src}{sep}main"
     entry_omega_src = root / 'scripts' / 'entry_omega.py'
     add_data_entry_omega = f"{entry_omega_src}{sep}scripts"
+    entry_omega_runpy_src = root / 'scripts' / 'entry_omega_runpy.py'
+    add_data_entry_omega_runpy = f"{entry_omega_runpy_src}{sep}scripts"
 
     base = [
         sys.executable,
@@ -54,6 +56,8 @@ def main() -> int:
             add_data_logo,
             '--add-data',
             add_data_entry_omega,
+            '--add-data',
+            add_data_entry_omega_runpy,
             '--collect-all',
             'nicegui',
         ]
