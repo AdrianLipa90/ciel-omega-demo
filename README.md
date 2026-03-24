@@ -1,102 +1,240 @@
-# CIEL/Ω — General Quantum Consciousness System  
+# CIEL/Ω — General Quantum Consciousness System
 ### *README — Architectural Documentation*
 A. Lipa, S. Sakpal, M. Kamecka, U. Ahmad (2025). (c) 2025 Adrian Lipa / Intention Lab
---- 
-# (local demo)
 
-CIEL to lokalny, single-userowy klient demo (UI + CLI) do uruchamiania i testowania workflow oraz (opcjonalnie) lokalnej inferencji na modelach **GGUF**.
+---
 
-- UI: **NiceGUI** (przeglądarka, lokalny serwer HTTP)
-- CLI: narzędzia pomocnicze
-- Modele: pliki `.gguf` zarządzane lokalnie
-- Backend LLM (opcjonalny): `llama-cpp-python` (CPU / opcjonalnie GPU zależnie od instalacji)
+## Overview
 
-Projekt jest przygotowany pod **lokalne demo produkcyjne** (bezpieczniejsze domyślne ustawienia, limity, feature-flagi) — bez autoryzacji i bez trybu multi-user.
+**CIEL/Ω** is a local, single-user demo environment for running and testing Omega-oriented workflows.
+It currently combines:
 
-## Właściwości systemu
+- a **legacy local runtime cockpit** built with **NiceGUI**,
+- a **CLI** for experiments, kernels, and demos,
+- optional **local GGUF inference** through `llama-cpp-python`,
+- an **orbital cockpit preview** that reorganizes the UI around identity, layers, evidence, and publication boundary,
+- a **static web preview** intended for architecture review and GitHub Pages publication.
 
-- **Lokalne demo single-user**
-  - Domyślnie UI binduje na `127.0.0.1` (localhost).
-- **Zarządzanie GGUF w UI**
-  - Skanowanie katalogu modeli
-  - Upload własnych `.gguf`
-  - Pobieranie modeli z URL (z limitem rozmiaru)
-  - Wybór aktywnego modelu + `Load/Unload`
-- **Katalog rekomendowanych modeli**
-  - Proponowane modele GGUF wraz z metadanymi (RAM/VRAM/uwagi).
-- **Hardening pod demo**
-  - Limity upload/download przez ENV
-  - Bezpieczna lokalizacja danych w katalogu użytkownika
-  - Instalacja backendu przez pip z poziomu UI jest **feature-flagowana** (domyślnie wyłączona)
+The repository should now be read as a transition point between:
 
-## Ograniczenia / uwagi
+1. a practical local runtime shell,
+2. a larger Omega system cockpit,
+3. a documentation and publication surface for the evolving architecture.
 
-- Brak wbudowanej autoryzacji — to jest świadomie **local demo**.
-- `llama-cpp-python` jest **opcjonalne** i bywa trudne do “zabundlowania” w 1 binarkę (różne CPU/GPU/toolchain). Zalecany wariant dla GGUF inferencji: instalacja w venv.
+---
 
-## Struktura projektu
+## Current surfaces
 
-- Runtime kod: `main/` (pakiet Pythona)
-- Entry-pointy:
-  - UI: `ciel-omega` → `main.apps.omega_app:main`
-  - CLI: `ciel-cli` → `main.apps.cli:main`
-- Skrypty:
-  - `scripts/install_local.*` — instalacja venv + zależności
-  - `scripts/run_ui.*` / `scripts/run_cli.*` — start UI/CLI z venv
-  - `scripts/build_bundle.*` — budowanie binarek PyInstaller
+### 1. Legacy runtime cockpit
 
-## Wymagania
+The original local cockpit is still present and remains the main runtime UI for:
 
-- Python: **>= 3.11**
+- GGUF model management,
+- local file handling,
+- kernel execution,
+- observability and diagnostics,
+- runtime settings.
+
+Entry point:
+
+- `ciel-omega` -> `main.apps.omega_app:main`
+
+### 2. Orbital cockpit preview
+
+A new preview surface has been added to begin the migration from a flat runtime UI to an **attractor-centered, orbit-organized cockpit**.
+
+It introduces:
+
+- **Identity Attractor** as the organizing center,
+- orbit-based navigation,
+- epistemic inspector / provenance surface,
+- operational event strip,
+- publication boundary as a first-class layer.
+
+Entry point:
+
+- `main.apps.omega_orbital_app`
+
+Launchers:
+
+- `scripts/run_orbital_ui.sh`
+- `scripts/run_orbital_ui.ps1`
+- `scripts/run_orbital_ui.cmd`
+
+### 3. Static web preview
+
+A static web version of the orbital cockpit preview is available for quick review and website publication.
+
+Entry point:
+
+- `docs/index.html`
+
+Supporting docs:
+
+- `docs/INDEX.md`
+- `docs/OMEGA_COCKPIT_1_0.md`
+- `docs/ORBITAL_PREVIEW.md`
+
+---
+
+## Architectural direction
+
+The current repository is no longer only a launcher for local runtime tools.
+It now contains the beginning of a larger cockpit refactor.
+
+### From flat tabs to system layers
+
+The legacy UI is organized as peer tabs such as:
+
+- Dashboard
+- Kernel
+- Chat
+- Files
+- Models
+- Observability
+- Settings
+
+The Omega-oriented direction replaces this with a layer-aware organization:
+
+- **Identity Attractor**
+- **Constitutive layers** (theory, operators, constants, constraints, memory topology)
+- **Dynamic layers** (execution, kernel, planner, session dynamics, routing)
+- **Interaction layers** (agent, chat, files, models, tools)
+- **Observation layers** (evidence, observability, audit, provenance, crossrefs)
+- **Boundary layers** (publication boundary, public/private separation, export manifests)
+
+### Why this matters
+
+The goal is not only a nicer UI.
+The goal is to make the cockpit reflect:
+
+- system hierarchy,
+- formal workflow,
+- epistemic status,
+- provenance,
+- runtime state,
+- publication boundary.
+
+In other words, the cockpit is moving from a **runtime control panel** toward a **system cockpit and epistemic instrument**.
+
+---
+
+## Repository structure
+
+### Runtime code
+
+- `main/` — Python package containing the runtime app, CLI, kernels, core utilities, and Omega-related modules
+
+### Main application entry points
+
+- `ciel-omega` -> `main.apps.omega_app:main`
+- `ciel-cli` -> `main.apps.cli:main`
+
+### Orbital cockpit modules
+
+- `main/apps/omega_orbital_app.py` — orbital cockpit preview app
+- `main/apps/orbital_cockpit.py` — orbital topology model
+- `main/apps/orbital_panels.py` — builders for navigation, identity snapshot, and event strip
+
+### Documentation / preview layer
+
+- `docs/index.html` — static orbital cockpit preview
+- `docs/INDEX.md` — documentation index
+- `docs/OMEGA_COCKPIT_1_0.md` — cockpit architecture specification
+- `docs/ORBITAL_PREVIEW.md` — launch and publication guide
+
+### Scripts
+
+- `scripts/install_local.*` — create local virtual environment and install dependencies
+- `scripts/run_ui.*` — run the legacy runtime cockpit
+- `scripts/run_cli.*` — run the CLI
+- `scripts/run_orbital_ui.*` — run the orbital cockpit preview
+- `scripts/build_bundle.*` — build PyInstaller bundles
+
+---
+
+## Requirements
+
+- Python **>= 3.11**
 - Linux: bash
-- Windows: PowerShell (PS1) lub `.cmd` wrapper
-- (opcjonalnie) kompilator/toolchain pod `llama-cpp-python` jeśli chcesz inferencję GGUF
+- Windows: PowerShell or `.cmd`
+- optional compiler / toolchain support for `llama-cpp-python` if local GGUF inference is needed
 
-## Instalacja i uruchomienie (venv) — zalecane do demo
+---
+
+## Installation
 
 ### Linux
-
-1) Instalacja:
 
 ```bash
 bash scripts/install_local.sh
 ```
 
-2) Start UI:
-
-```bash
-bash scripts/run_ui.sh
-```
-
-3) Start CLI:
-
-```bash
-bash scripts/run_cli.sh list
-```
-
 ### Windows
 
-1) Instalacja (najprościej):
+Run:
 
-- uruchom `scripts\install_local.cmd`
+- `scripts\install_local.cmd`
 
-albo PowerShell:
+or:
 
 ```powershell
 scripts\install_local.ps1
 ```
 
-2) Start UI:
+---
 
-- uruchom `scripts\run_ui.cmd`
+## Running the project
 
-3) Start CLI:
+### Legacy runtime cockpit
+
+#### Linux
+
+```bash
+bash scripts/run_ui.sh
+```
+
+#### Windows
+
+- `scripts\run_ui.cmd`
+
+### Orbital cockpit preview
+
+#### Linux
+
+```bash
+bash scripts/run_orbital_ui.sh
+```
+
+#### Windows PowerShell
+
+```powershell
+scripts\run_orbital_ui.ps1
+```
+
+#### Windows CMD
+
+```cmd
+scripts\run_orbital_ui.cmd
+```
+
+### CLI
+
+#### Linux
+
+```bash
+bash scripts/run_cli.sh list
+```
+
+#### Windows PowerShell
 
 ```powershell
 scripts\run_cli.ps1 list
 ```
 
-## (Opcjonalnie) instalacja backendu GGUF (llama-cpp-python)
+---
+
+## Optional GGUF backend installation
 
 ### Linux
 
@@ -104,7 +242,7 @@ scripts\run_cli.ps1 list
 INSTALL_LLAMA=1 bash scripts/install_local.sh
 ```
 
-Dla CUDA (jeśli wspierane w Twoim środowisku):
+CUDA-capable environments may use:
 
 ```bash
 INSTALL_LLAMA=1 LLAMA_BACKEND=cuda bash scripts/install_local.sh
@@ -116,79 +254,154 @@ INSTALL_LLAMA=1 LLAMA_BACKEND=cuda bash scripts/install_local.sh
 scripts\install_local.ps1 -InstallLlama 1 -LlamaBackend cpu
 ```
 
-## Zmienne środowiskowe (ENV)
+---
+
+## Environment variables
 
 - `CIEL_HOST`
-  - Domyślnie: `127.0.0.1`
+  - default: `127.0.0.1`
 - `CIEL_PORT`
-  - Domyślnie: `8080`
+  - default legacy UI: `8080`
+  - default orbital preview launchers: `8081`
 - `CIEL_DATA_DIR`
-  - Nadpisuje lokalizację katalogu danych aplikacji
+  - overrides the application data directory
 - `CIEL_MAX_UPLOAD_MB`
-  - Domyślnie: `4096`
+  - default: `4096`
 - `CIEL_MAX_DOWNLOAD_MB`
-  - Domyślnie: `8192`
+  - default: `8192`
 - `CIEL_ALLOW_PIP_INSTALL`
-  - `1` włącza przycisk/flow instalacji pip z UI (domyślnie `0`)
+  - set to `1` to enable pip-install flow from the UI (disabled by default)
 
-Przykład (Linux):
+Example:
 
 ```bash
 CIEL_PORT=9090 bash scripts/run_ui.sh
 ```
 
-## Dane aplikacji
+---
 
-Domyślnie dane trzymane są w:
+## Application data
 
-- Linux/Windows (katalog użytkownika): `~/.ciel/ciel_omega_data`
-  - Modele GGUF: `~/.ciel/ciel_omega_data/models`
-  - Pliki: `~/.ciel/ciel_omega_data/files`
-  - Stan: `~/.ciel/ciel_omega_data/state.json`
+By default, application data is stored under the user home directory:
 
-## Bundle / “instalator bez Pythona” (PyInstaller)
+- `~/.ciel/ciel_omega_data`
+  - models: `~/.ciel/ciel_omega_data/models`
+  - files: `~/.ciel/ciel_omega_data/files`
+  - state: `~/.ciel/ciel_omega_data/state.json`
 
-Ten wariant tworzy jednoplikowe binarki, które można spakować i dystrybuować jako `.zip` / `.tar.gz`.
+---
 
-### Build lokalny (Linux)
+## Static web publication
 
-1) Zainstaluj zależności bundla w `.venv` (albo użyj skryptu):
+The repository already contains a static preview entry page at:
+
+- `docs/index.html`
+
+To publish it via GitHub Pages:
+
+1. open repository settings,
+2. go to **Pages**,
+3. set source to **Deploy from a branch**,
+4. choose branch `main`, folder `/docs`,
+5. save.
+
+This publishes the architecture preview without requiring Python or local runtime setup.
+
+---
+
+## Bundles / standalone distribution
+
+PyInstaller-based bundles remain available for the legacy runtime surface.
+
+### Linux
 
 ```bash
 PYTHON_BIN=.venv/bin/python bash scripts/build_bundle.sh
 ```
 
-2) Wynik znajdziesz w `dist_bundle/`:
+Outputs:
 
 - `dist_bundle/ciel-omega`
 - `dist_bundle/ciel-cli`
 
-### Build lokalny (Windows)
+### Windows
 
 ```powershell
 scripts\build_bundle.ps1
 ```
 
-### CI (GitHub Actions)
+### CI / GitHub Actions
 
-Workflow: `.github/workflows/build_bundles.yml`
+Workflow:
 
-- uruchom ręcznie: Actions → `build-bundles` → Run workflow
-- lub przez tag `v*`
+- `.github/workflows/build_bundles.yml`
 
-Publikowane artefakty:
+Published artifacts:
 
 - `ciel-bundle-windows.zip`
 - `ciel-bundle-linux.tar.gz`
 
-## Szybkie FAQ / troubleshooting
+---
 
-- UI nie startuje / brak zależności:
-  - upewnij się, że instalacja poszła przez `scripts/install_local.*`
-- GGUF nie działa:
-  - sprawdź czy `llama-cpp-python` jest zainstalowane (`pip show llama-cpp-python` w venv)
-  - UI pokaże komunikat jeśli backend jest niedostępny
-- Zmiana portu:
-  - ustaw `CIEL_PORT` i uruchom ponownie
+## Current status
 
+### Stable / already present
 
+- legacy local runtime cockpit,
+- CLI entrypoints,
+- local GGUF model management,
+- local files and previews,
+- kernel registry and runtime stepping,
+- observability / diagnostics,
+- orbital cockpit topology scaffold,
+- orbital cockpit preview app,
+- static web preview,
+- documentation index and cockpit architecture specification.
+
+### Present but not yet fully wired
+
+- canonical object manifests,
+- theory export binding,
+- planner runtime UI,
+- full test coverage integration,
+- sanitization and dirty-manifest tracking,
+- complete migration of legacy panels into orbital geometry.
+
+---
+
+## Documentation map
+
+Start here depending on intent:
+
+- runtime usage -> this README
+- cockpit architecture -> `docs/OMEGA_COCKPIT_1_0.md`
+- orbital preview operation -> `docs/ORBITAL_PREVIEW.md`
+- documentation index -> `docs/INDEX.md`
+- website preview -> `docs/index.html`
+
+---
+
+## Troubleshooting
+
+- **UI does not start**
+  - ensure installation completed through `scripts/install_local.*`
+- **GGUF backend unavailable**
+  - verify that `llama-cpp-python` is installed in the environment
+- **Port already in use**
+  - set `CIEL_PORT` explicitly and restart
+- **Orbital preview is not the same as the legacy runtime UI**
+  - this is expected; the preview is a new cockpit surface, not yet a full replacement
+
+---
+
+## Summary
+
+This repository now serves three parallel roles:
+
+1. a **working local runtime demo**,
+2. a **development path toward the Omega system cockpit**,
+3. a **web/documentation surface for architecture review and publication**.
+
+The legacy runtime remains intact.
+The orbital cockpit introduces the new geometry.
+The static preview makes that geometry publishable.
