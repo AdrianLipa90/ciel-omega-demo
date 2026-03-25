@@ -1,0 +1,68 @@
+repo: AdrianLipa90/ciel-omega-demo
+branch: Agent4
+agent: AGENT4
+role: demo_shell_downstream
+mission: internal_indexation_and_cross_reference_holonomy
+index_authority:
+  global_index: pending_identification
+  layer_indexes: pending_identification
+  machine_registry: this_seed
+object_classes:
+  - runtime_stable
+  - preview_only
+  - surface_bound
+  - engine_facing
+  - manifest_bound
+  - placeholder
+  - import_slot
+relation_types:
+  - upstream
+  - downstream
+  - couples_to
+  - imports_from
+  - surface_for
+  - manifest_for
+  - documents
+priority:
+  - inventory
+  - indexation
+  - shell_engine_boundary_marking
+  - object_ids_where_needed
+  - manifest_linkage
+  - cross_reference_holonomy
+  - validator_requirements
+  - controlled_upstream_binding_after_internal_coherence
+status_rules:
+  canonical_values:
+    - stable
+    - preview
+    - structural
+    - placeholder
+    - deferred
+  epistemic_values:
+    - implemented
+    - documented
+    - manifest_only
+    - imported
+    - heuristic
+    - pending
+first_records:
+  - id: MAP-DEM-0001
+    name: agent4_demo_inventory
+    layer: meta_index
+    class: surface_bound
+    status: structural
+    epistemic_status: documented
+    path: docs/agent4/INDEXING_AND_HOLONOMY_PLAN.md
+    downstream: []
+    upstream: []
+  - id: REG-DEM-0001
+    name: agent4_demo_index_registry_seed
+    layer: registry
+    class: manifest_bound
+    status: structural
+    epistemic_status: documented
+    path: docs/agent4/index_registry_seed.yaml
+    downstream: []
+    upstream:
+      - MAP-DEM-0001
