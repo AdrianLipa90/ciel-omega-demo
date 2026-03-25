@@ -29,6 +29,31 @@ It is also a cockpit migration workspace and an epistemic instrument in construc
 
 ---
 
+## Structural anchor
+
+The repository must now be read with the following structural rule:
+
+- **`ciel-omega-demo` remains the main core repository and cockpit shell**
+- **one of the folders inside `Informational Dynamics` is expected to become the engine layer**
+
+This means the architecture should evolve with a clear dependency direction:
+
+- cockpit / shell / runtime surface / docs / manifest live at the main repo level,
+- the engine emerges as an internal execution core anchored in an `Informational Dynamics` folder,
+- future refactors must not accidentally invert that relation.
+
+Practical consequence:
+
+> the repo is the system core and orchestration shell,
+> the engine is a subordinate but central internal subsystem.
+
+So changes should preserve the distinction between:
+
+- **system shell / cockpit / publication surface**, and
+- **engine / execution core / informational dynamics layer**.
+
+---
+
 ## Central architectural direction
 
 The project is moving:
@@ -51,6 +76,10 @@ The target geometry is:
 This means every meaningful change should be evaluated against one question:
 
 > Does this move the repo closer to a readable system cockpit rather than back toward a pile of tabs and tools?
+
+A second coordinating question now also applies:
+
+> Does this preserve the distinction between the repo as core shell and Informational Dynamics as future engine?
 
 ---
 
@@ -80,6 +109,11 @@ At the time of writing, the repository already contains:
 - crossrefs in cards,
 - evidence / boundary / educational layers,
 - manifest-exported object card state.
+
+### Expected structural evolution
+- main repo remains the cockpit shell and integration core,
+- the future engine should be extracted or stabilized inside an `Informational Dynamics` folder,
+- shell and engine must remain legibly separated in docs, manifests, and runtime architecture.
 
 ---
 
@@ -113,6 +147,9 @@ Statuses must remain explicit.
 
 ### 7. Never hide validation limits
 If a smoke-check was not rerun after a new architectural change, say so.
+
+### 8. Do not collapse shell and engine into one semantic blob
+The repo-level cockpit architecture and the future Informational Dynamics engine should be tightly coupled, but not semantically conflated.
 
 ---
 
@@ -162,14 +199,17 @@ Required outcomes:
 - object-to-object navigation,
 - context-preserving inspector transitions.
 
-### Phase 5 — Bind theory to runtime more explicitly
+### Phase 5 — Bind theory and shell to engine more explicitly
 Goal:
-- reduce the gap between architectural labels and executable or inspectable structure.
+- reduce the gap between architectural labels and executable or inspectable structure,
+- and make the relation between repo shell and Informational Dynamics engine explicit.
 
 Required outcomes:
 - clearer theory export binding,
 - stronger operator / constant / constraint surfaces,
-- future object manifests and sector views.
+- explicit shell/engine interface,
+- future object manifests and sector views,
+- clear identification of the engine folder inside `Informational Dynamics`.
 
 ### Phase 6 — Strengthen evidence and validation
 Goal:
@@ -250,6 +290,8 @@ When a new layer is introduced, at least one of the following must be updated:
 
 If the change introduces a new epistemic object or schema, a dedicated doc is preferred.
 
+If the change affects the shell/engine distinction, `AGENT.md` should be updated explicitly.
+
 ---
 
 ## Anti-patterns
@@ -261,7 +303,8 @@ Avoid these repo failure modes:
 - adding manifest fields never used anywhere,
 - claiming validation without rerunning smoke-checks,
 - introducing new layers without index/discoverability updates,
-- replacing working runtime paths with preview-only abstractions.
+- replacing working runtime paths with preview-only abstractions,
+- burying the future engine relation inside vague documentation instead of naming it directly.
 
 ---
 
@@ -271,4 +314,9 @@ The repository should evolve by this sequence:
 
 **runtime stability -> epistemic readability -> truth convergence -> navigable topology -> deeper theory/runtime binding -> stronger evidence**
 
-If a proposed change violates that order, the burden of proof is on the change.
+under the structural rule:
+
+**main repo = core shell / cockpit / publication surface**
+**Informational Dynamics engine folder = execution core**
+
+If a proposed change violates that order or that dependency direction, the burden of proof is on the change.
