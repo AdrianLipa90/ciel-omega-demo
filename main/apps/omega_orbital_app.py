@@ -353,6 +353,11 @@ def main() -> int:
                     with ui.card().classes('w-1/3 p-3'):
                         ui.label('Test').classes('text-base font-semibold')
                         ui.label(str(card['test'])).classes('text-xs')
+                if card.get('crossrefs'):
+                    with ui.card().classes('w-full p-3 mt-3'):
+                        ui.label('Crossrefs').classes('text-base font-semibold')
+                        for ref in card['crossrefs']:
+                            ui.label(str(ref)).classes('text-xs omega-badge')
                 if card.get('docs'):
                     with ui.card().classes('w-full p-3 mt-3'):
                         ui.label('Supporting docs').classes('text-base font-semibold')
@@ -469,6 +474,8 @@ def main() -> int:
         with workspace:
             ui.label(_workspace_title(key)).classes('text-2xl font-bold omega-title')
             ui.label('This module remains available, but is no longer treated as a top-level system axis.').classes('omega-muted')
+        _render_object_card(workspace, key)
+        with workspace:
             with ui.card().classes('w-full p-4 mt-4'):
                 ui.label(f'count: {_count_files(folder, pattern)}').classes('text-xs')
                 ui.table(
@@ -530,7 +537,7 @@ def main() -> int:
         with workspace:
             ui.label(title).classes('text-2xl font-bold omega-title')
             ui.label(summary).classes('omega-muted')
-        _render_object_card(workspace, 'analogies' if key != 'analogies' else key)
+        _render_object_card(workspace, key)
         with workspace:
             with ui.row().classes('w-full gap-4 pt-4'):
                 with ui.card().classes('w-1/3 p-4'):

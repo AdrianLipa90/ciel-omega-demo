@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Object cards are the first explicit epistemic interface for major Omega cockpit nodes.
+Object cards are the first explicit epistemic interface for Omega cockpit nodes.
 
 They are meant to stop the system from exposing only labels such as:
 - Theory
@@ -11,7 +11,7 @@ They are meant to stop the system from exposing only labels such as:
 - Boundary
 - Analogies
 
-without explaining what those layers *are*.
+without explaining what those layers *are*, how they relate, and how they should be checked.
 
 Each card makes a selected node readable through a stable schema.
 
@@ -35,11 +35,13 @@ Each object card contains:
    - epistemic / runtime / publication status
 7. **Interpretation**
    - how the object should be read in Omega language
+8. **Crossrefs**
+   - explicit links to other nodes which co-define, constrain, explain, or validate it
 
 Optional:
 - supporting docs
-- future crossrefs
 - provenance links
+- future truth-convergence metrics
 
 ---
 
@@ -53,16 +55,18 @@ That means every major node should become inspectable as an object with:
 - source,
 - code location,
 - verification pathway,
-- interpretive place in the whole system.
+- interpretive place in the whole system,
+- and visible relations to other objects.
 
 Object cards are the first compact implementation of that requirement.
 
 ---
 
-## Initial coverage
+## Coverage
 
-The first registry covers:
+The current registry covers:
 
+### Core / parent nodes
 - Identity Attractor
 - Theory
 - Operators
@@ -76,20 +80,35 @@ The first registry covers:
 - Publication Boundary
 - Analogies
 
-This is intentionally not complete.
-It is a starter registry that can be expanded node by node.
+### Child nodes
+- Planner
+- Session Dynamics
+- Command Routing
+- Chat
+- Tool Interface
+- Files
+- Models
+- Observability
+- Tests
+- Audit
+- Provenance
+- Crossrefs
+- Analogy Registry
+- Truth Attractor Analogies
+- Mnemonic Book For Kids
 
 ---
 
 ## Relationship to other layers
 
-Object cards should eventually connect to:
+Object cards connect directly to:
 
 - orbital manifest export,
 - inspector payload,
-- runtime diagnostics,
+- orbital workspace rendering,
 - documentation index,
 - public educational layers,
+- white-thread interpretation,
 - future truth-convergence metrics.
 
 ---
@@ -101,4 +120,22 @@ but it is not yet epistemically mature.
 
 The long-term direction is:
 
-**visible node -> object card -> test binding -> truth convergence record**
+**visible node -> object card -> crossref network -> test binding -> truth convergence record**
+
+---
+
+## Meaning of crossrefs
+
+Crossrefs are not decorative.
+They answer a specific question:
+
+> What other objects must be read together with this one to avoid semantic distortion?
+
+Examples:
+- `theory -> operators`
+- `execution -> kernel`
+- `evidence -> audit`
+- `analogies -> truth_attractor_analogies`
+- `boundary -> constraints`
+
+Crossrefs therefore serve as the first readable layer of relational topology inside the cockpit.
