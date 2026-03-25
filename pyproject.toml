@@ -28,6 +28,8 @@ bundle = [
 [project.scripts]
 ciel-cli = "main.apps.cli:main"
 ciel-omega = "main.apps.omega_app:main"
+ciel-omega-orbital = "main.apps.omega_orbital_app:main"
+ciel-orbital-manifest = "main.apps.orbital_manifest_export:main"
 
 [tool.setuptools]
 include-package-data = true

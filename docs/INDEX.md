@@ -17,6 +17,12 @@
   - badges, inspector, event strip
   - refactor phases
 
+### Local debug / validation
+- `REPORT_LOCAL_DEBUG_2026-03-25.md`
+  - local install and runtime smoke-check report
+  - root page failure analysis and fixes
+  - packaging and launcher notes
+
 ### Preview surfaces
 - `index.html`
   - static web preview

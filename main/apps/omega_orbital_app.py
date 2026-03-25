@@ -7,7 +7,7 @@ from typing import Any, Optional
 
 from main.kernels.registry import KERNELS
 
-from .omega_app import (
+from main.apps.omega_app import (
     BASE_DIR,
     DATA_DIR,
     FILES_DIR,
@@ -18,8 +18,8 @@ from .omega_app import (
     _load_state,
     _pick_port,
 )
-from .orbital_cockpit import build_default_topology
-from .orbital_panels import build_event_strip, build_identity_snapshot, build_navigation_sections
+from main.apps.orbital_cockpit import build_default_topology
+from main.apps.orbital_panels import build_event_strip, build_identity_snapshot, build_navigation_sections
 
 
 ANALOGIES_DIR = BASE_DIR / 'docs' / 'analogies'
@@ -211,7 +211,7 @@ CSS = """
 
 def main() -> int:
     try:
-        from nicegui import app, ui
+        from nicegui import app, ui, core as nicegui_core
     except ModuleNotFoundError as e:
         raise SystemExit(
             'Missing dependency: nicegui. Install requirements to run omega_orbital_app.'
@@ -242,6 +242,7 @@ def main() -> int:
     selected_label: dict[str, Optional[Any]] = {'widget': None}
     inspector_code: dict[str, Optional[Any]] = {'widget': None}
     event_labels: dict[str, Any] = {}
+    workspace_holder: dict[str, Any] = {'widget': None}
 
     def _current_log_record() -> Optional[dict[str, Any]]:
         return _read_last_jsonl(_resolve_log_path(str(cfg.log_path)))
@@ -504,6 +505,9 @@ def main() -> int:
             ui.code(json.dumps(state, ensure_ascii=False, indent=2)).classes('w-full mt-4')
 
     def _render_workspace() -> None:
+        workspace = workspace_holder['widget']
+        if workspace is None:
+            return
         workspace.clear()
         key = selected['key']
         if key in ('identity',):
@@ -561,54 +565,56 @@ def main() -> int:
         _render_workspace()
         _refresh_inspector()
 
-    ui.query('.nicegui-content').classes('p-0')
+    def _root_page() -> None:
+        ui.query('.nicegui-content').classes('p-0')
 
-    with ui.header().classes('items-center justify-between px-4'):
-        with ui.row().classes('items-center gap-3'):
-            ui.image('/assets/Logo1.png').classes('h-10 w-10')
-            ui.label('CIEL').classes('text-xl omega-title')
-            ui.label('Ω orbital preview').classes('text-xs omega-badge')
-        with ui.column().classes('items-end gap-0'):
-            selected_label['widget'] = ui.label('Identity Attractor').classes('text-sm font-semibold')
-            ui.label('legacy runtime preserved').classes('text-xs omega-muted')
+        with ui.header().classes('items-center justify-between px-4'):
+            with ui.row().classes('items-center gap-3'):
+                ui.image('/assets/Logo1.png').classes('h-10 w-10')
+                ui.label('CIEL').classes('text-xl omega-title')
+                ui.label('Ω orbital preview').classes('text-xs omega-badge')
+            with ui.column().classes('items-end gap-0'):
+                selected_label['widget'] = ui.label('Identity Attractor').classes('text-sm font-semibold')
+                ui.label('legacy runtime preserved').classes('text-xs omega-muted')
 
-    with ui.row().classes('w-full').style('height: calc(100vh - 118px);'):
-        with ui.column().classes('w-1/5 p-4 gap-3'):
-            with ui.card().classes('w-full p-3'):
-                ui.label('Orbital Navigation').classes('text-base font-semibold')
-                for section in nav_sections:
-                    ui.label(section.title).classes('text-xs omega-badge')
-                    for item in section.items:
-                        ui.button(
-                            f"{item['label']} [{item['status']}]",
-                            on_click=lambda _, key=item['key']: _select(key),
-                        ).props('flat align=left').classes('w-full justify-start text-left')
-                    ui.separator()
-            with ui.card().classes('w-full p-3'):
-                ui.label('Auxiliary').classes('text-base font-semibold')
-                ui.button('Settings', on_click=lambda: _select('settings')).props('flat align=left').classes('w-full justify-start')
-                ui.label('This preview preserves the current runtime shell instead of replacing it.').classes('text-xs omega-muted pt-2')
+        with ui.row().classes('w-full').style('height: calc(100vh - 118px);'):
+            with ui.column().classes('w-1/5 p-4 gap-3'):
+                with ui.card().classes('w-full p-3'):
+                    ui.label('Orbital Navigation').classes('text-base font-semibold')
+                    for section in nav_sections:
+                        ui.label(section.title).classes('text-xs omega-badge')
+                        for item in section.items:
+                            ui.button(
+                                f"{item['label']} [{item['status']}]",
+                                on_click=lambda _, key=item['key']: _select(key),
+                            ).props('flat align=left').classes('w-full justify-start text-left')
+                        ui.separator()
+                with ui.card().classes('w-full p-3'):
+                    ui.label('Auxiliary').classes('text-base font-semibold')
+                    ui.button('Settings', on_click=lambda: _select('settings')).props('flat align=left').classes('w-full justify-start')
+                    ui.label('This preview preserves the current runtime shell instead of replacing it.').classes('text-xs omega-muted pt-2')
 
-        workspace = ui.column().classes('w-3/5 p-4 gap-3')
+            workspace_holder['widget'] = ui.column().classes('w-3/5 p-4 gap-3')
 
-        with ui.column().classes('w-1/5 p-4 gap-3'):
-            with ui.card().classes('w-full p-3'):
-                ui.label('Inspector').classes('text-base font-semibold')
-                ui.label('Source of truth, provenance, and white-thread context for the selected node.').classes('text-xs omega-muted')
-                inspector_code['widget'] = ui.code('').classes('w-full')
-            with ui.card().classes('w-full p-3'):
-                ui.label('Mission Strip Preview').classes('text-base font-semibold')
-                ui.label('Bottom strip remains the short-form live operational state.').classes('text-xs omega-muted')
+            with ui.column().classes('w-1/5 p-4 gap-3'):
+                with ui.card().classes('w-full p-3'):
+                    ui.label('Inspector').classes('text-base font-semibold')
+                    ui.label('Source of truth, provenance, and white-thread context for the selected node.').classes('text-xs omega-muted')
+                    inspector_code['widget'] = ui.code('').classes('w-full')
+                with ui.card().classes('w-full p-3'):
+                    ui.label('Mission Strip Preview').classes('text-base font-semibold')
+                    ui.label('Bottom strip remains the short-form live operational state.').classes('text-xs omega-muted')
 
-    with ui.footer().classes('items-center justify-start px-4 gap-4'):
-        for label in ('Kernel', 'Model', 'Export', 'Ethics', 'Boundary', 'Dirty', 'Failing tests', 'Recent artifact'):
-            event_labels[label] = ui.label(f'{label}: -').classes('text-xs omega-badge')
+        with ui.footer().classes('items-center justify-start px-4 gap-4'):
+            for label in ('Kernel', 'Model', 'Export', 'Ethics', 'Boundary', 'Dirty', 'Failing tests', 'Recent artifact'):
+                event_labels[label] = ui.label(f'{label}: -').classes('text-xs omega-badge')
 
-    _render_workspace()
-    _refresh_inspector()
-    _refresh_event_strip()
-    ui.timer(1.0, _refresh_inspector)
-    ui.timer(1.0, _refresh_event_strip)
+        _render_workspace()
+        _refresh_inspector()
+        _refresh_event_strip()
+        ui.timer(1.0, _refresh_inspector)
+        ui.timer(1.0, _refresh_event_strip)
+
 
     host = os.environ.get('CIEL_HOST', '127.0.0.1')
     preferred_port = int(os.environ.get('CIEL_PORT', '8080'))
@@ -616,10 +622,15 @@ def main() -> int:
     if port != preferred_port:
         print(f'Port {preferred_port} is busy; using {port}', flush=True)
 
+    if nicegui_core.script_client is not None:
+        nicegui_core.script_client.delete()
+        nicegui_core.script_client = None
+    nicegui_core.script_mode = False
+
     for _ in range(3):
         try:
             print(f'Omega orbital preview starting on http://{host}:{port}', flush=True)
-            ui.run(title='CIEL/Ω Orbital Preview', reload=False, host=host, port=port)
+            ui.run(_root_page, title='CIEL/Ω Orbital Preview', reload=False, host=host, port=port)
             break
         except OSError as ex:
             if getattr(ex, 'errno', None) != 98:
