@@ -7,6 +7,7 @@ from typing import Any, Optional
 
 from main.kernels.registry import KERNELS
 
+from main.apps.object_cards import get_object_card
 from main.apps.omega_app import (
     BASE_DIR,
     DATA_DIR,
@@ -23,6 +24,7 @@ from main.apps.orbital_panels import build_event_strip, build_identity_snapshot,
 
 
 ANALOGIES_DIR = BASE_DIR / 'docs' / 'analogies'
+OBJECT_CARDS_DOC = BASE_DIR / 'docs' / 'OBJECT_CARDS.md'
 
 
 def _resolve_log_path(path_str: str) -> Path:
@@ -276,6 +278,7 @@ def main() -> int:
             'architecture': str(_doc_path('docs', 'OMEGA_COCKPIT_1_0.md')),
             'preview_guide': str(_doc_path('docs', 'ORBITAL_PREVIEW.md')),
             'docs_index': str(_doc_path('docs', 'INDEX.md')),
+            'object_cards': str(OBJECT_CARDS_DOC),
             'analogies_root': str(ANALOGIES_DIR / 'README.md'),
             'analogy_registry': str(ANALOGIES_DIR / 'ANALOGY_REGISTRY.md'),
             'truth_attractor_analogies': str(ANALOGIES_DIR / 'TRUTH_ATTRACTOR_ANALOGIES.md'),
@@ -292,6 +295,7 @@ def main() -> int:
                 'description': node.description,
                 'children': list(node.children),
             },
+            'object_card': get_object_card(key),
             'related_threads': [
                 {
                     'source': t.source,
@@ -321,12 +325,48 @@ def main() -> int:
             }
         return payload
 
+    def _render_object_card(workspace, key: str) -> None:
+        card = get_object_card(key)
+        if not card:
+            return
+        with workspace:
+            with ui.card().classes('w-full p-4 mb-4'):
+                ui.label(card['title']).classes('text-xl font-semibold')
+                ui.label(f"status: {card['status']}").classes('text-xs omega-badge')
+                with ui.row().classes('w-full gap-4 pt-3'):
+                    with ui.card().classes('w-1/3 p-3'):
+                        ui.label('Role').classes('text-base font-semibold')
+                        ui.label(str(card['role'])).classes('text-xs')
+                    with ui.card().classes('w-1/3 p-3'):
+                        ui.label('Definition').classes('text-base font-semibold')
+                        ui.label(str(card['definition'])).classes('text-xs')
+                    with ui.card().classes('w-1/3 p-3'):
+                        ui.label('Interpretation').classes('text-base font-semibold')
+                        ui.label(str(card['interpretation'])).classes('text-xs')
+                with ui.row().classes('w-full gap-4 pt-3'):
+                    with ui.card().classes('w-1/3 p-3'):
+                        ui.label('Derivation').classes('text-base font-semibold')
+                        ui.label(str(card['derivation'])).classes('text-xs')
+                    with ui.card().classes('w-1/3 p-3'):
+                        ui.label('Implementation').classes('text-base font-semibold')
+                        ui.label(str(card['implementation'])).classes('text-xs')
+                    with ui.card().classes('w-1/3 p-3'):
+                        ui.label('Test').classes('text-base font-semibold')
+                        ui.label(str(card['test'])).classes('text-xs')
+                if card.get('docs'):
+                    with ui.card().classes('w-full p-3 mt-3'):
+                        ui.label('Supporting docs').classes('text-base font-semibold')
+                        for doc in card['docs']:
+                            ui.label(str(doc)).classes('text-xs omega-badge')
+
     def _render_identity(workspace) -> None:
         snap = _identity_snapshot()
         rec = _current_log_record() or {}
         with workspace:
             ui.label('Identity Attractor').classes('text-2xl font-bold omega-title')
             ui.label('Orbital preview: the cockpit is now organized around system identity rather than peer runtime tabs.').classes('omega-muted')
+        _render_object_card(workspace, 'identity')
+        with workspace:
             with ui.row().classes('w-full gap-4 pt-4'):
                 with ui.card().classes('w-1/3 p-4'):
                     ui.label('Identity State').classes('text-base font-semibold')
@@ -354,30 +394,35 @@ def main() -> int:
                     ui.label('Latest Runtime Record').classes('text-base font-semibold')
                     ui.code(json.dumps(rec, ensure_ascii=False, indent=2) if rec else 'No runtime record found').classes('w-full')
 
-    def _render_theory_like(workspace, root_key: str) -> None:
-        node = topology.get(root_key)
+    def _render_theory_like(workspace, key: str) -> None:
+        node = topology.get(key)
         with workspace:
-            ui.label(_workspace_title(root_key)).classes('text-2xl font-bold omega-title')
+            ui.label(_workspace_title(key)).classes('text-2xl font-bold omega-title')
             if node is not None:
                 ui.label(node.description).classes('omega-muted')
-            ui.label('Role -> Definition -> Derivation -> Implementation -> Test -> Status -> Interpretation').classes('text-xs omega-badge')
-            with ui.row().classes('w-full gap-4 pt-4'):
-                for child_key in (node.children if node is not None else ()): 
-                    child = topology.get(child_key)
-                    if child is None:
-                        continue
-                    with ui.card().classes('w-72 p-4'):
-                        ui.label(child.label).classes('text-base font-semibold')
-                        ui.label(f'status: {child.default_status.value}').classes('text-xs omega-badge')
-                        ui.label(child.description).classes('text-xs')
-                        ui.separator()
-                        ui.label('Definition / derivation / implementation / tests are not yet bound into the preview.').classes('text-xs omega-muted')
+        _render_object_card(workspace, key)
+        if key == 'theory' and node is not None:
+            with workspace:
+                ui.label('Role -> Definition -> Derivation -> Implementation -> Test -> Status -> Interpretation').classes('text-xs omega-badge')
+                with ui.row().classes('w-full gap-4 pt-4'):
+                    for child_key in node.children:
+                        child = topology.get(child_key)
+                        if child is None:
+                            continue
+                        with ui.card().classes('w-72 p-4'):
+                            ui.label(child.label).classes('text-base font-semibold')
+                            ui.label(f'status: {child.default_status.value}').classes('text-xs omega-badge')
+                            ui.label(child.description).classes('text-xs')
+                            ui.separator()
+                            ui.label('Child nodes now support object cards and can be opened directly from navigation.').classes('text-xs omega-muted')
 
     def _render_execution(workspace, key: str) -> None:
         rec = _current_log_record() or {}
         with workspace:
             ui.label(_workspace_title(key)).classes('text-2xl font-bold omega-title')
             ui.label('Execution is explicitly separated from theory and agent consumption.').classes('omega-muted')
+        _render_object_card(workspace, key)
+        with workspace:
             with ui.row().classes('w-full gap-4 pt-4'):
                 with ui.card().classes('w-1/3 p-4'):
                     ui.label('Runtime Config').classes('text-base font-semibold')
@@ -397,6 +442,8 @@ def main() -> int:
         with workspace:
             ui.label(_workspace_title(key)).classes('text-2xl font-bold omega-title')
             ui.label('Chat is demoted from app center to one module inside Agent.').classes('omega-muted')
+        _render_object_card(workspace, key)
+        with workspace:
             with ui.row().classes('w-full gap-4 pt-4'):
                 with ui.card().classes('w-1/3 p-4'):
                     ui.label('Agent Shell').classes('text-base font-semibold')
@@ -438,6 +485,8 @@ def main() -> int:
         with workspace:
             ui.label(_workspace_title(key)).classes('text-2xl font-bold omega-title')
             ui.label('Evidence is promoted from generic observability to a first-class epistemic surface.').classes('omega-muted')
+        _render_object_card(workspace, key)
+        with workspace:
             with ui.row().classes('w-full gap-4 pt-4'):
                 with ui.card().classes('w-1/2 p-4'):
                     ui.label('Log Tail').classes('text-base font-semibold')
@@ -453,6 +502,8 @@ def main() -> int:
         with workspace:
             ui.label('Publication Boundary').classes('text-2xl font-bold omega-title')
             ui.label('Boundary state is now treated as a top-level system layer, not hidden git trivia.').classes('omega-muted')
+        _render_object_card(workspace, 'boundary')
+        with workspace:
             with ui.row().classes('w-full gap-4 pt-4'):
                 with ui.card().classes('w-1/3 p-4'):
                     ui.label('Current State').classes('text-base font-semibold')
@@ -479,6 +530,8 @@ def main() -> int:
         with workspace:
             ui.label(title).classes('text-2xl font-bold omega-title')
             ui.label(summary).classes('omega-muted')
+        _render_object_card(workspace, 'analogies' if key != 'analogies' else key)
+        with workspace:
             with ui.row().classes('w-full gap-4 pt-4'):
                 with ui.card().classes('w-1/3 p-4'):
                     ui.label('Educational Layer').classes('text-base font-semibold')
@@ -513,8 +566,7 @@ def main() -> int:
         if key in ('identity',):
             _render_identity(workspace)
         elif key in ('theory', 'operators', 'constants', 'constraints', 'memory_topology'):
-            root = 'theory' if key != 'theory' else key
-            _render_theory_like(workspace, root)
+            _render_theory_like(workspace, key)
         elif key in ('execution', 'kernel', 'planner', 'session_dynamics', 'command_routing'):
             _render_execution(workspace, key)
         elif key in ('agent', 'chat', 'tools'):
@@ -614,7 +666,6 @@ def main() -> int:
         _refresh_event_strip()
         ui.timer(1.0, _refresh_inspector)
         ui.timer(1.0, _refresh_event_strip)
-
 
     host = os.environ.get('CIEL_HOST', '127.0.0.1')
     preferred_port = int(os.environ.get('CIEL_PORT', '8080'))

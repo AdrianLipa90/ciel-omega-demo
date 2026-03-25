@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional
 
 from main.kernels.registry import KERNELS
 
+from .object_cards import export_object_cards
 from .omega_app import DATA_DIR, FILES_DIR, MODELS_DIR, _load_ciel_config_from_state, _load_state
 from .orbital_cockpit import build_default_topology
 from .orbital_panels import build_event_strip, build_identity_snapshot, build_navigation_sections
@@ -88,7 +89,7 @@ def build_manifest() -> Dict[str, Any]:
     return {
         'meta': {
             'name': 'CIEL/Ω Orbital Manifest',
-            'version': '0.2.0-preview',
+            'version': '0.3.0-preview',
             'source': 'main.apps.orbital_manifest_export',
         },
         'identity': identity,
@@ -100,6 +101,7 @@ def build_manifest() -> Dict[str, Any]:
             }
             for section in nav_sections
         ],
+        'object_cards': export_object_cards(),
         'threads': [
             {
                 'source': thread.source,
@@ -126,6 +128,7 @@ def build_manifest() -> Dict[str, Any]:
             'architecture': 'docs/OMEGA_COCKPIT_1_0.md',
             'preview_guide': 'docs/ORBITAL_PREVIEW.md',
             'docs_index': 'docs/INDEX.md',
+            'object_cards': 'docs/OBJECT_CARDS.md',
             'static_preview': 'docs/index.html',
             'live_preview': 'docs/orbital_live.html',
             'analogies_root': str(ANALOGIES_DIR / 'README.md'),

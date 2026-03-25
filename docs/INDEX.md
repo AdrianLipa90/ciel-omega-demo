@@ -6,6 +6,7 @@
 - `orbital_live.html` — manifest-driven live web preview
 - `OMEGA_COCKPIT_1_0.md` — architectural specification for the Omega cockpit refactor
 - `ORBITAL_PREVIEW.md` — operational guide for local launch and web publication
+- `OBJECT_CARDS.md` — schema and methodology for object cards
 
 ## Current documentation map
 
@@ -16,6 +17,13 @@
   - screen topology
   - badges, inspector, event strip
   - refactor phases
+
+### Object card layer
+- `OBJECT_CARDS.md`
+  - object-card schema
+  - node maturity rule
+  - relation to manifest and inspector
+  - initial coverage of theory / execution / evidence / boundary / analogies
 
 ### Local debug / validation
 - `REPORT_LOCAL_DEBUG_2026-03-25.md`
@@ -49,6 +57,7 @@
 - `main/apps/orbital_cockpit.py` — orbital topology model
 - `main/apps/orbital_panels.py` — navigation and identity/event builders
 - `main/apps/orbital_manifest_export.py` — exporter for orbital manifest state
+- `main/apps/object_cards.py` — registry of object-card definitions
 
 ## Launch scripts
 
