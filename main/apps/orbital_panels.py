@@ -24,6 +24,7 @@ def build_navigation_sections(topology: Optional[CockpitTopology] = None) -> Lis
         (OrbitId.INTERACTION, 'Interaction Layers'),
         (OrbitId.OBSERVATION, 'Observation Layers'),
         (OrbitId.BOUNDARY, 'Boundary Layers'),
+        (OrbitId.EDUCATION, 'Educational Layers'),
     ]
 
     sections: List[NavigationSection] = []

@@ -23,6 +23,7 @@ class OrbitId(int, Enum):
     INTERACTION = 3
     OBSERVATION = 4
     BOUNDARY = 5
+    EDUCATION = 6
 
 
 @dataclass(frozen=True)
@@ -247,6 +248,35 @@ DEFAULT_NODES: tuple[OrbitalNode, ...] = (
         description='Public/private separation, export manifests, and sanitization state.',
         default_status=EpistemicStatus.PRIVATE_ONLY,
     ),
+    OrbitalNode(
+        key='analogies',
+        label='Analogies',
+        orbit=OrbitId.EDUCATION,
+        description='Educational analogy layer translating formal concepts into mnemonic images.',
+        default_status=EpistemicStatus.PUBLIC_EXPORTED,
+        children=('analogy_registry', 'truth_attractor_analogies', 'mnemonic_book'),
+    ),
+    OrbitalNode(
+        key='analogy_registry',
+        label='Analogy Registry',
+        orbit=OrbitId.EDUCATION,
+        description='Registry mapping formal concepts to mnemonic images and the limits of each analogy.',
+        default_status=EpistemicStatus.PUBLIC_EXPORTED,
+    ),
+    OrbitalNode(
+        key='truth_attractor_analogies',
+        label='Truth Attractor Analogies',
+        orbit=OrbitId.EDUCATION,
+        description='Analogy set for truth as attractor, convergence, nodes, and white threads.',
+        default_status=EpistemicStatus.PUBLIC_EXPORTED,
+    ),
+    OrbitalNode(
+        key='mnemonic_book',
+        label='Mnemonic Book For Kids',
+        orbit=OrbitId.EDUCATION,
+        description='Child-safe mnemonic guide for Omega concepts and cockpit language.',
+        default_status=EpistemicStatus.PUBLIC_EXPORTED,
+    ),
 )
 
 
@@ -258,6 +288,9 @@ DEFAULT_THREADS: tuple[WhiteThread, ...] = (
     WhiteThread('evidence', 'boundary', 'validates', strength=0.90),
     WhiteThread('constants', 'kernel', 'parameterizes', strength=0.85),
     WhiteThread('constraints', 'execution', 'bounds', strength=0.88),
+    WhiteThread('theory', 'analogies', 'teaches', strength=0.74),
+    WhiteThread('analogies', 'agent', 'explains', strength=0.68),
+    WhiteThread('analogies', 'evidence', 'bridges', strength=0.61),
 )
 
 
@@ -279,6 +312,7 @@ def orbit_navigation_groups(topology: Optional[CockpitTopology] = None) -> Dict[
         OrbitId.INTERACTION: topology.orbit_nodes(OrbitId.INTERACTION),
         OrbitId.OBSERVATION: topology.orbit_nodes(OrbitId.OBSERVATION),
         OrbitId.BOUNDARY: topology.orbit_nodes(OrbitId.BOUNDARY),
+        OrbitId.EDUCATION: topology.orbit_nodes(OrbitId.EDUCATION),
     }
 
 

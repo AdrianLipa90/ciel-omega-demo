@@ -11,6 +11,9 @@ from .orbital_cockpit import build_default_topology
 from .orbital_panels import build_event_strip, build_identity_snapshot, build_navigation_sections
 
 
+ANALOGIES_DIR = Path('docs/analogies')
+
+
 def _resolve_log_path(path_str: str) -> Path:
     p = Path(path_str).expanduser()
     if p.is_absolute():
@@ -85,7 +88,7 @@ def build_manifest() -> Dict[str, Any]:
     return {
         'meta': {
             'name': 'CIEL/Ω Orbital Manifest',
-            'version': '0.1.0-preview',
+            'version': '0.2.0-preview',
             'source': 'main.apps.orbital_manifest_export',
         },
         'identity': identity,
@@ -124,6 +127,21 @@ def build_manifest() -> Dict[str, Any]:
             'preview_guide': 'docs/ORBITAL_PREVIEW.md',
             'docs_index': 'docs/INDEX.md',
             'static_preview': 'docs/index.html',
+            'live_preview': 'docs/orbital_live.html',
+            'analogies_root': str(ANALOGIES_DIR / 'README.md'),
+            'analogy_registry': str(ANALOGIES_DIR / 'ANALOGY_REGISTRY.md'),
+            'truth_attractor_analogies': str(ANALOGIES_DIR / 'TRUTH_ATTRACTOR_ANALOGIES.md'),
+            'mnemonic_book': str(ANALOGIES_DIR / 'MNEMONIC_BOOK_FOR_KIDS.md'),
+        },
+        'education': {
+            'enabled': True,
+            'summary': 'Analogy and mnemonic layer for teaching Omega concepts to beginners and children.',
+            'entries': [
+                str(ANALOGIES_DIR / 'README.md'),
+                str(ANALOGIES_DIR / 'ANALOGY_REGISTRY.md'),
+                str(ANALOGIES_DIR / 'TRUTH_ATTRACTOR_ANALOGIES.md'),
+                str(ANALOGIES_DIR / 'MNEMONIC_BOOK_FOR_KIDS.md'),
+            ],
         },
     }
 

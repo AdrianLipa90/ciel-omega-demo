@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import sys
-import time
 from pathlib import Path
 from typing import Any, Optional
 
@@ -22,6 +20,9 @@ from .omega_app import (
 )
 from .orbital_cockpit import build_default_topology
 from .orbital_panels import build_event_strip, build_identity_snapshot, build_navigation_sections
+
+
+ANALOGIES_DIR = BASE_DIR / 'docs' / 'analogies'
 
 
 def _resolve_log_path(path_str: str) -> Path:
@@ -76,6 +77,52 @@ def _count_files(folder: Path, pattern: str = '*') -> int:
         return 0
 
 
+def _read_text_file(path: Path) -> str:
+    if not path.exists() or not path.is_file():
+        return f'File not found: {path}'
+    try:
+        return path.read_text(encoding='utf-8')
+    except Exception as ex:
+        return f'Error reading {path}: {ex}'
+
+
+def _doc_path(*parts: str) -> Path:
+    return BASE_DIR.joinpath(*parts)
+
+
+def _education_entry(key: str) -> tuple[str, Path, str]:
+    mapping = {
+        'analogies': (
+            'Analogies',
+            ANALOGIES_DIR / 'README.md',
+            'Educational analogy layer translating formal concepts into mnemonic images and teaching bridges.',
+        ),
+        'analogy_registry': (
+            'Analogy Registry',
+            ANALOGIES_DIR / 'ANALOGY_REGISTRY.md',
+            'Registry mapping formal concepts to mnemonic images and limits of analogy.',
+        ),
+        'truth_attractor_analogies': (
+            'Truth Attractor Analogies',
+            ANALOGIES_DIR / 'TRUTH_ATTRACTOR_ANALOGIES.md',
+            'Analogy set for truth as attractor, convergence, nodes, white threads, and false consensus.',
+        ),
+        'mnemonic_book': (
+            'Mnemonic Book For Kids',
+            ANALOGIES_DIR / 'MNEMONIC_BOOK_FOR_KIDS.md',
+            'Child-safe mnemonic guide for Omega concepts and cockpit language.',
+        ),
+    }
+    return mapping.get(
+        key,
+        (
+            key.replace('_', ' ').title(),
+            ANALOGIES_DIR / 'README.md',
+            'Educational layer entry.',
+        ),
+    )
+
+
 def _workspace_title(key: str) -> str:
     mapping = {
         'identity': 'Identity Attractor',
@@ -101,6 +148,10 @@ def _workspace_title(key: str) -> str:
         'provenance': 'Provenance',
         'crossrefs': 'Crossrefs',
         'boundary': 'Publication Boundary',
+        'analogies': 'Analogies',
+        'analogy_registry': 'Analogy Registry',
+        'truth_attractor_analogies': 'Truth Attractor Analogies',
+        'mnemonic_book': 'Mnemonic Book For Kids',
         'settings': 'Settings',
     }
     return mapping.get(key, key.replace('_', ' ').title())
@@ -220,12 +271,19 @@ def main() -> int:
         key = selected['key']
         node = topology.get(key)
         rec = _current_log_record()
-        return {
+        docs = {
+            'architecture': str(_doc_path('docs', 'OMEGA_COCKPIT_1_0.md')),
+            'preview_guide': str(_doc_path('docs', 'ORBITAL_PREVIEW.md')),
+            'docs_index': str(_doc_path('docs', 'INDEX.md')),
+            'analogies_root': str(ANALOGIES_DIR / 'README.md'),
+            'analogy_registry': str(ANALOGIES_DIR / 'ANALOGY_REGISTRY.md'),
+            'truth_attractor_analogies': str(ANALOGIES_DIR / 'TRUTH_ATTRACTOR_ANALOGIES.md'),
+            'mnemonic_book': str(ANALOGIES_DIR / 'MNEMONIC_BOOK_FOR_KIDS.md'),
+        }
+        payload = {
             'selected': key,
             'title': _workspace_title(key),
-            'node': None
-            if node is None
-            else {
+            'node': None if node is None else {
                 'key': node.key,
                 'label': node.label,
                 'orbit': int(node.orbit),
@@ -249,9 +307,18 @@ def main() -> int:
                 'log_path': str(_resolve_log_path(str(cfg.log_path))),
                 'models_dir': str(MODELS_DIR),
                 'files_dir': str(FILES_DIR),
+                'docs': docs,
             },
             'latest_record': rec,
         }
+        if key in {'analogies', 'analogy_registry', 'truth_attractor_analogies', 'mnemonic_book'}:
+            title, path, summary = _education_entry(key)
+            payload['education'] = {
+                'title': title,
+                'path': str(path),
+                'summary': summary,
+            }
+        return payload
 
     def _render_identity(workspace) -> None:
         snap = _identity_snapshot()
@@ -399,6 +466,37 @@ def main() -> int:
                     ui.label('sanitization issues: not yet wired').classes('text-xs omega-muted')
                     ui.label('dirty manifests: not yet wired').classes('text-xs omega-muted')
 
+    def _render_analogies(workspace, key: str) -> None:
+        title, path, summary = _education_entry(key)
+        content = _read_text_file(path)
+        docs_rows = [
+            ('root', ANALOGIES_DIR / 'README.md'),
+            ('registry', ANALOGIES_DIR / 'ANALOGY_REGISTRY.md'),
+            ('truth attractor', ANALOGIES_DIR / 'TRUTH_ATTRACTOR_ANALOGIES.md'),
+            ('mnemonic book', ANALOGIES_DIR / 'MNEMONIC_BOOK_FOR_KIDS.md'),
+        ]
+        with workspace:
+            ui.label(title).classes('text-2xl font-bold omega-title')
+            ui.label(summary).classes('omega-muted')
+            with ui.row().classes('w-full gap-4 pt-4'):
+                with ui.card().classes('w-1/3 p-4'):
+                    ui.label('Educational Layer').classes('text-base font-semibold')
+                    ui.label('This orbit translates formal Omega concepts into mnemonic and child-safe images.').classes('text-xs')
+                    ui.label('The analogy layer is secondary to formalism, but first-class for teaching and memory.').classes('text-xs')
+                with ui.card().classes('w-1/3 p-4'):
+                    ui.label('Analogy Entry Points').classes('text-base font-semibold')
+                    for label, doc_path in docs_rows:
+                        ui.label(f'{label}: {doc_path}').classes('text-xs')
+                with ui.card().classes('w-1/3 p-4'):
+                    ui.label('Children / Beginners').classes('text-base font-semibold')
+                    ui.label('truth = valley').classes('text-xs omega-badge')
+                    ui.label('node = lamp').classes('text-xs omega-badge')
+                    ui.label('white thread = glowing string').classes('text-xs omega-badge')
+                    ui.label('cockpit = solar system').classes('text-xs omega-badge')
+            with ui.card().classes('w-full p-4 mt-4'):
+                ui.label('Rendered document').classes('text-base font-semibold')
+                ui.markdown(content).classes('w-full')
+
     def _render_settings(workspace) -> None:
         with workspace:
             ui.label('Settings').classes('text-2xl font-bold omega-title')
@@ -423,6 +521,8 @@ def main() -> int:
             _render_evidence(workspace, key)
         elif key == 'boundary':
             _render_boundary(workspace)
+        elif key in ('analogies', 'analogy_registry', 'truth_attractor_analogies', 'mnemonic_book'):
+            _render_analogies(workspace, key)
         elif key == 'settings':
             _render_settings(workspace)
         else:
