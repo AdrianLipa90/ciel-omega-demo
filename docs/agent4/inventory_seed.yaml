@@ -1,0 +1,46 @@
+repo: AdrianLipa90/ciel-omega-demo
+branch: Agent4
+agent: AGENT4
+inventory_kind: provisional_snapshot_seed
+source_basis: local_snapshot_analysis
+counts:
+  total_files: 130
+  py: 86
+  md: 16
+  sh: 7
+  ps1: 5
+  cmd: 4
+  json: 3
+observed_top_level_sectors:
+  - .github
+  - .workload
+  - docs
+  - main
+  - raporty
+  - scripts
+observed_main_sectors:
+  - main/apps
+  - main/adam
+  - main/cognition
+  - main/core
+  - main/emotion
+  - main/experiments
+  - main/kernels
+  - main/omega
+  - main/spectral
+class_hypotheses:
+  main: runtime_stable
+  docs: surface_bound
+  scripts: surface_bound
+  .github: manifest_bound
+  .workload: placeholder
+  raporty: surface_bound
+next_actions:
+  - identify_global_index_authority
+  - identify_existing_layer_indexes
+  - seed_top_level_object_registry
+  - mark_shell_engine_boundaries
+  - separate_runtime_from_preview_and_docs_surfaces
+artifact:
+  inventory_note: docs/agent4/INVENTORY_SEED.md
+status: draft
